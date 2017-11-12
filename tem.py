@@ -3,7 +3,7 @@ import os
 import glob
 import time
 import RPi.GPIO as GPIO
-
+import lcddriver
 
 GPIO.setmode(GPIO.BCM)
 
@@ -39,8 +39,13 @@ def read_temp():
         temp_f = temp_c * 9.0 / 5.0 + 32.0
         return temp_c, temp_f
 
+# Load the driver and set it to "display"
+# If you use something from the driver library use the "display." prefix first
+display = lcddriver.lcd()
 
+display.lcd_display_string("Testing", 1)
 
+Try:
 while True:
 	print(read_temp())
 	time.sleep(1)
@@ -49,12 +54,14 @@ while True:
 		GPIO.output(27,GPIO.HIGH)
 		GPIO.output(5,GPIO.LOW)	
 		print("HVAC ON")
-		continue
+		
 	else:	
 		GPIO.output(27,GPIO.LOW)
 		GPIO.output(17,GPIO.HIGH)
 		GPIO.output(5,GPIO.HIGH)
 		print("HVAC OFF")
-		continue
-	
+		
+except KeyboardInterrupt: # If there is a KeyboardInterrupt (when you press ctrl+c), exit the program and cleanup
+    display.lcd_clear()
+    GPIO.cleannup()
 
